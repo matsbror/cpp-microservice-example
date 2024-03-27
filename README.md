@@ -1,2 +1,2 @@
-# cpp-microservice-example
+# Microservice example
 A very simple microservice example with two dockerized services
