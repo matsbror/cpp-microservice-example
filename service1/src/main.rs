@@ -46,7 +46,7 @@ fn sub(arg1: i64, arg2: i64) -> i64 {
     arg1 - arg2
 }
 
-#[post("/math/<op>",  data = "<args>")] 
+#[post("/<op>",  data = "<args>")] 
 fn math(op: & str, args: Json<Args>) -> Json<ResultValue> {
     print!("{} {} {}", op, args.arg1, args.arg2);
     match op {
@@ -56,7 +56,7 @@ fn math(op: & str, args: Json<Args>) -> Json<ResultValue> {
     }
 }
 
-#[post("/add", format = "text", data = "<args>")] 
+#[post("/", format = "json", data = "<args>")] 
 fn adder(args: Json<Args>) -> Json<ResultValue> {   
     print!("{} {}", args.arg1, args.arg2);
     Json(ResultValue { result: add(args.arg1, args.arg2) })
