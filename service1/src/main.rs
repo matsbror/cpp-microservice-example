@@ -2,6 +2,7 @@
 
 use rocket::serde::{json::{self, Json}, Deserialize, Serialize};
 use reqwest::{Response, Client};
+use std::env;
 
 #[cfg(test)] mod tests;
 
@@ -40,9 +41,24 @@ fn sub(arg1: i64, arg2: i64) -> i64 {
     arg1 - arg2
 }
 
+fn get_service2_ip() -> String {
+    let v = match env::var("SERVICE2_IP") {
+        Ok(val) => {
+            val
+        }
+        Err(_) => {
+            "127.0.0.1:8002".to_string()
+        }
+    };
+    println!("SERVICE2_IP = {}", v);
+    v
+}
+
 async fn mul(arg1: i64, arg2: i64) -> i64  {
     let client = Client::new();
-    let response = client.post("http://127.0.0.1:8002/math/mul")
+    let url = format!("http://{}/math/mul", get_service2_ip());
+    println!("{} {} {}", url, arg1, arg2);
+    let response = client.post(url)
         .body(format!("{{\"arg1\": {}, \"arg2\": {}}}", arg1, arg2))
         .send()
         .await.unwrap();
@@ -58,7 +74,8 @@ async fn mul(arg1: i64, arg2: i64) -> i64  {
 
 async fn div(arg1: i64, arg2: i64) -> i64  {
     let client = Client::new();
-    let response = client.post("http://127.0.0.1:8002/math/div")
+    let url = format!("http://{}/math/div", get_service2_ip());
+    let response = client.post(url)
         .body(format!("{{\"arg1\": {}, \"arg2\": {}}}", arg1, arg2))
         .send()
         .await.unwrap();
@@ -74,7 +91,7 @@ async fn div(arg1: i64, arg2: i64) -> i64  {
 
 #[post("/<op>",  data = "<args>")] 
 async fn math(op: & str, args: Json<Args>) -> Json<ResultValue> {
-    print!("{} {} {}", op, args.arg1, args.arg2);
+    println!("{} {} {}", op, args.arg1, args.arg2);
     match op {
         "add" => Json(ResultValue { result: add(args.arg1, args.arg2) }),
         "sub" => Json(ResultValue { result: sub(args.arg1, args.arg2) }),
@@ -93,6 +110,7 @@ fn usage() -> Json<ResultMessage> {
 
 #[launch]
 fn rocket() -> _ {
+
     rocket::build()
         .mount("/", routes![usage])
         .mount("/math", routes![math])

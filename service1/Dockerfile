@@ -1,13 +1,17 @@
-FROM alpine:3.5
+# Use Ubuntu 22.04 as the base image
+FROM ubuntu:22.04
 
-RUN addgroup -S app && adduser -S -g app app 
-ENV HOME=/home/app
+RUN apt update -y && apt install -y curl
 
-COPY target/release/service1 /usr/local/bin/
-COPY Rocket.toml /usr/local/bin/
+# Create a directory for your application
+WORKDIR /app
 
+# Copy the executable 'service1' and 'Rocket.toml' to the container
+COPY target/release/service1 /app/
+COPY Rocket.toml /app/
+
+# Expose port 8001
 EXPOSE 8001
 
-USER app
-WORKDIR $HOME
-ENTRYPOINT ["/usr/local/bin/service1"]
+# Define the command to run when the container starts
+CMD ["./service1"]

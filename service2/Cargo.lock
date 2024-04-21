@@ -1004,7 +1004,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "service1"
+name = "service2"
 version = "0.0.0"
 dependencies = [
  "rocket",

@@ -35,3 +35,28 @@ curl --location 'http://127.0.0.1:8001/math/mul' --header 'Content-Type: applica
 curl --location 'http://127.0.0.1:8001/math/div' --header 'Content-Type: application/json' --data '{  "arg1": 45, "arg2": 12 }'
 ```
 
+# Running as docker containers.
+
+In each sub-directory, build the services in release mode, and then build the Docker image like this:
+
+```
+cd service1
+cargo build --release
+docker build -t service1 .
+
+cd ..
+cd service2
+cargo build --release
+docker build -t service2 .
+
+cd ..
+```
+
+Start the services:
+
+```
+docker-compose up -d
+```
+
+The services are called in exactly the same way as above.
+
